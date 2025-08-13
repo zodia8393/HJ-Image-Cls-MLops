@@ -1,0 +1,87 @@
+schema: '2.0'
+stages:
+  download:
+    cmd: python -m src.scripts.download_data
+    deps:
+    - path: src/scripts/download_data.py
+      hash: md5
+      md5: e6678073a153ff7a264a44e2d892d854
+      size: 815
+    outs:
+    - path: src/data/raw
+      hash: md5
+      md5: e252d2c8ba36d1ab3e21a873ab62daa3.dir
+      size: 356712185
+      nfiles: 9
+  preprocess:
+    cmd: python -m src.scripts.preprocess_data
+    deps:
+    - path: src/data/raw
+      hash: md5
+      md5: e252d2c8ba36d1ab3e21a873ab62daa3.dir
+      size: 356712185
+      nfiles: 9
+    - path: src/scripts/preprocess_data.py
+      hash: md5
+      md5: d1adcd14ce2a955f964cdbf7b7c2dd73
+      size: 1156
+    outs:
+    - path: src/data/processed
+      hash: md5
+      md5: e252d2c8ba36d1ab3e21a873ab62daa3.dir
+      size: 356712185
+      nfiles: 9
+  train:
+    cmd: python -m src.scripts.train
+    deps:
+    - path: params.yaml
+      hash: md5
+      md5: 5a7e6a883faccee9c24322b5ce37fdf1
+      size: 1382
+    - path: src/data/processed
+      hash: md5
+      md5: e252d2c8ba36d1ab3e21a873ab62daa3.dir
+      size: 356712185
+      nfiles: 9
+    - path: src/ml/datamodules/cifar10.py
+      hash: md5
+      md5: 36ffaf573ca1b61d07d44804a9342e52
+      size: 2563
+    - path: src/ml/models/build_model.py
+      hash: md5
+      md5: 8a505412e703ffb713bec680744f5fa0
+      size: 4217
+    - path: src/scripts/train.py
+      hash: md5
+      md5: 8443ddcfb2696a25ee8e7b19ae4deef6
+      size: 6069
+    outs:
+    - path: outputs/metrics.json
+      hash: md5
+      md5: 0995e5cd652b1e2f8edfc578fe4e6689
+      size: 36
+    - path: outputs/model.pth
+      hash: md5
+      md5: f74b3d991b9837e4f6789f6be706aa1e
+      size: 146033086
+  evaluate:
+    cmd: python -m src.scripts.evaluate
+    deps:
+    - path: outputs/model.pth
+      hash: md5
+      md5: f74b3d991b9837e4f6789f6be706aa1e
+      size: 146033086
+    - path: src/data/processed
+      hash: md5
+      md5: e252d2c8ba36d1ab3e21a873ab62daa3.dir
+      size: 356712185
+      nfiles: 9
+    - path: src/scripts/evaluate.py
+      hash: md5
+      md5: c87e78deb6aeab436b67b7a9f91b221c
+      size: 298
+    outs:
+    - path: outputs/eval.json
+      hash: md5
+      md5: 0d7ac2dec5f281678f65dcf7fe4681ba
+      size: 16

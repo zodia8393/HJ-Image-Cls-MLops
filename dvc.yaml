@@ -1,0 +1,36 @@
+stages:
+  download:
+    cmd: python -m src.scripts.download_data
+    deps:
+      - src/scripts/download_data.py
+    outs:
+      - src/data/raw
+  preprocess:
+    cmd: python -m src.scripts.preprocess_data
+    deps:
+      - src/scripts/preprocess_data.py
+      - src/data/raw
+    outs:
+      - src/data/processed
+  train:
+    cmd: python -m src.scripts.train
+    deps:
+      - src/scripts/train.py
+      - src/data/processed
+      - src/ml/models/build_model.py
+      - src/ml/datamodules/cifar10.py
+      - params.yaml
+    outs:
+      - outputs/model.pth
+    metrics:
+      - outputs/metrics.json:
+          cache: false
+  evaluate:
+    cmd: python -m src.scripts.evaluate
+    deps:
+      - src/scripts/evaluate.py
+      - outputs/model.pth
+      - src/data/processed
+    metrics:
+      - outputs/eval.json:
+          cache: false
